@@ -1,0 +1,12 @@
+{
+  "name": "root",
+  "version": "0.0.0",
+  "repository": "https://github.com/tresorama/react-file-state.git",
+  "author": "Jacopo Marrone <jacopo.marrone27@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ]
+}
