@@ -1,6 +1,6 @@
 {
   "name": "@tresorama/react-file-state",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "author": "Jacopo Marrone <jacopo.marrone27@gmail.com>",
   "license": "MIT",
   "main": "./dist/index.js",
