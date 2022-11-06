@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
+    "clean": "rimraf ./.next",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
@@ -27,6 +28,7 @@
     "zustand": "^4.1.4"
   },
   "devDependencies": {
-    "@types/hash-sum": "^1.0.0"
+    "@types/hash-sum": "^1.0.0",
+    "rimraf": "^3.0.2"
   }
 }

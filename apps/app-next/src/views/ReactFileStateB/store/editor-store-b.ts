@@ -60,20 +60,20 @@ export const editorStore = createStore(
     isEditing: state.draftVariant !== null,
     serialized_state: JSON.stringify(state)
   }),
-  (get, set, set2) => ({
-    goNextVariant: () => set2(prev => {
+  (set, get) => ({
+    goNextVariant: () => set(prev => {
       const newIndex = Math.min(
         prev.current_variant_index + 1,
         prev.variants.length - 1
       );
       return { ...prev, current_variant_index: newIndex };
     }),
-    goPrevVariant: () => set2(prev => {
+    goPrevVariant: () => set(prev => {
       const newIndex = Math.max(prev.current_variant_index - 1, 0);
       const newState = { ...prev, current_variant_index: newIndex };
       return newState;
     }),
-    deleteCurrentVariant: () => set2(prev => {
+    deleteCurrentVariant: () => set(prev => {
       const newState = mutate(prev, (prev) => {
         if (prev.variants.length <= 2) return; // abort
         prev.variants.splice(prev.current_variant_index, 1);
@@ -84,28 +84,28 @@ export const editorStore = createStore(
       });
       return newState;
     }),
-    enableEditing: () => set2(prev => {
+    enableEditing: () => set(prev => {
       return {
         ...prev,
         draftVariant: { ...prev.variants[prev.current_variant_index] }
       };
     }),
-    disableEditing: () => set2(prev => {
+    disableEditing: () => set(prev => {
       return { ...prev, draftVariant: null };
     }),
-    setDraftValues: (key: keyof Variant, value: Variant[typeof key]) => set2(prev => {
+    setDraftValues: (key: keyof Variant, value: Variant[typeof key]) => set(prev => {
       if (prev.draftVariant === null) return prev;
       const draftVariant = { ...prev.draftVariant, [key]: value };
       return { ...prev, draftVariant };
     }),
-    saveDraftAsNewVariant: () => set2(prev => {
+    saveDraftAsNewVariant: () => set(prev => {
       return mutate(prev, (prev) => {
         if (prev.draftVariant === null) return;
         prev.variants.push(prev.draftVariant);
         prev.current_variant_index = prev.variants.length - 1;
       });
     }),
-    saveDraftOverwritingVariant: () => set2(prev => {
+    saveDraftOverwritingVariant: () => set(prev => {
       return mutate(prev, (prev) => {
         if (prev.draftVariant === null) return;
         prev.variants.splice(prev.current_variant_index, 1, prev.draftVariant);
