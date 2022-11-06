@@ -42,6 +42,7 @@ var createStore = (initialState, derivedStateResolver, actionsCreator) => {
   let derivedState = derivedStateResolver(initialState);
   let listeners = [];
   const get = () => state;
+  const getDerived = () => derivedState;
   const getWithDerived = () => ({ ...state, ...derivedState });
   const set = (newState) => {
     state = newState;
@@ -81,6 +82,8 @@ var createStore = (initialState, derivedStateResolver, actionsCreator) => {
   };
   return {
     get,
+    getDerived,
+    getWithDerived,
     set,
     subscribe,
     actions,

@@ -21,6 +21,7 @@ export const createStore = <S extends State, D extends DerivedState, A extends A
   let derivedState = derivedStateResolver(initialState);
   let listeners: (() => void)[] = [];
   const get = () => state;
+  const getDerived = () => derivedState;
   const getWithDerived = () => ({ ...state, ...derivedState });
   const set = (newState: S) => {
     state = newState;
@@ -63,6 +64,8 @@ export const createStore = <S extends State, D extends DerivedState, A extends A
   };
   return {
     get,
+    getDerived,
+    getWithDerived,
     set,
     subscribe,
     actions,

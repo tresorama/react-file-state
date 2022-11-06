@@ -2,9 +2,8 @@ import Head from 'next/head';
 import Link from 'next/link';
 
 const routes = [
-  ['/react-file-state-a'],
-  ['/react-file-state-b'],
-  ['/react-file-state-b-zustand'],
+  ['/react-file-state'],
+  ['/react-file-state-zustand'],
 ];
 
 export default function Home() {

@@ -12,6 +12,8 @@ declare type Actions = {
 };
 declare const createStore: <S extends State, D extends DerivedState, A extends Actions>(initialState: S, derivedStateResolver: (s: S) => D, actionsCreator: (get: () => S, set: (newState: S) => void, set2: (stateMutator: (prevState: S) => S) => void) => A) => {
     get: () => S;
+    getDerived: () => D;
+    getWithDerived: () => S & D;
     set: (newState: S) => void;
     subscribe: (func: () => void) => () => void;
     actions: A;

@@ -1,5 +1,5 @@
 {
-  "name": "react-file-state-b",
+  "name": "@tresorama/react-file-state",
   "version": "0.0.1",
   "author": "Jacopo Marrone <jacopo.marrone27@gmail.com>",
   "license": "MIT",
@@ -10,6 +10,9 @@
     "build": "tsup",
     "clean": "rimraf ./dist"
   },
+  "files": [
+    "dist"
+  ],
   "devDependencies": {
     "@types/node": "^16.18.3",
     "@types/react": "^18.0.25",

@@ -2,21 +2,9 @@
 
 React-File-State.
 
-Access: Private  
+Version: 0.0.1  
 Status: Early stage of Development  
-
-## Development Track
-
-### Note
-
-- `react-file-state-a`, present typescript error based on API usage, typescript cannot infer types correctly. Discard.
-- `react-file-state-b`, current
-
-### To Do
-
-- [x] Minimal Working Version
-- [ ] Test
-- [ ] keep "get, set" or remove ? (from being passed to "actionCreator")
+**NOT PRODUCTION READY**  
 
 ## Usage
 

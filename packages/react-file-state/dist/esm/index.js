@@ -1,66 +1,85 @@
 // src/create-store.ts
 import { useCallback, useEffect, useRef, useState } from "react";
-var stateAreEquals = (a, b) => {
+
+// src/utils/is-equal.ts
+var isEqual = (a, b) => {
+  if (Object.is(a, b))
+    return true;
   return JSON.stringify(a) === JSON.stringify(b);
 };
-var buildActionsProxied = (actions, get, set) => {
-  const actionsProxied = {};
-  for (let [key, value] of Object.entries(actions)) {
-    const actionProvided = value;
-    const actionProxied = (...args) => {
-      const prevState = get();
-      const newState = actionProvided(prevState, ...args);
-      set(newState);
-    };
-    const keyTyped = key;
-    actionsProxied[keyTyped] = actionProxied;
-  }
-  return actionsProxied;
-};
-var createStore = (initialState, derivedStateResolver, actions) => {
+
+// src/create-store.ts
+var createStore = (initialState, derivedStateResolver, actionsCreator) => {
   let state = initialState;
   let derivedState = derivedStateResolver(initialState);
-  const listeners = [];
+  let listeners = [];
   const get = () => state;
+  const getDerived = () => derivedState;
   const getWithDerived = () => ({ ...state, ...derivedState });
   const set = (newState) => {
     state = newState;
     derivedState = derivedStateResolver(newState);
     listeners.forEach((x) => x());
   };
-  const actionsProxied = buildActionsProxied(actions, get, set);
+  const set2 = (stateMutator) => {
+    const prev = get();
+    const newState = stateMutator(prev);
+    state = newState;
+    derivedState = derivedStateResolver(newState);
+    listeners.forEach((x) => x());
+  };
+  const actions = actionsCreator(get, set, set2);
   const subscribe = (func) => {
     listeners.push(func);
     return () => {
-      listeners.splice(listeners.length - 1);
+      listeners = listeners.filter((x) => x !== func);
     };
   };
-  const useStore = (selector = (ms) => ms) => {
+  const defaultSelector = (ms) => ms;
+  const useStore = (selector = defaultSelector) => {
     const selectorMemoized = useCallback(selector, []);
     const lastState = useRef(selectorMemoized(getWithDerived()));
     const [state2, setState] = useState(selectorMemoized(getWithDerived()));
     useEffect(() => {
       const unsubscribe = subscribe(() => {
         const newState = selectorMemoized(getWithDerived());
-        if (!stateAreEquals(newState, lastState.current)) {
+        if (!isEqual(newState, lastState.current)) {
           setState(newState);
           lastState.current = newState;
         }
       });
       return () => unsubscribe();
     }, [selectorMemoized]);
-    return [state2, actionsProxied];
+    return [state2, actions];
   };
   return {
     get,
+    getDerived,
+    getWithDerived,
     set,
     subscribe,
     actions,
-    actionsProxied,
     useStore
   };
 };
+
+// src/utils/mutate.ts
+var mutate = (a, massager) => {
+  const clone = JSON.parse(JSON.stringify(a));
+  massager(clone);
+  return clone;
+};
+
+// src/utils/pick.ts
+var pick = (object, keys) => {
+  return keys.reduce(
+    (out, key) => ({ ...out, [key]: object[key] }),
+    {}
+  );
+};
 export {
-  createStore
+  createStore,
+  mutate,
+  pick
 };
 //# sourceMappingURL=index.js.map

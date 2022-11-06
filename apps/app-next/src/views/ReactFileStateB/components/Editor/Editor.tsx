@@ -1,5 +1,5 @@
 import { Box, Button, Flex, Text } from "@chakra-ui/react";
-import { pick } from "react-file-state-b";
+import { pick } from "@tresorama/react-file-state";
 import { editorStore } from "../../store/editor-store-b";
 import { VariantForm } from "../VariantForm/VariantForm";
 

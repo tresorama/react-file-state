@@ -1,4 +1,4 @@
-import { createStore, mutate } from 'react-file-state-b';
+import { createStore, mutate } from '@tresorama/react-file-state';
 
 // Entity - types
 type Variant = {

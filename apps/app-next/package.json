@@ -22,8 +22,7 @@
     "next": "^13.0.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-file-state-a": "*",
-    "react-file-state-b": "*",
+    "@tresorama/react-file-state": "*",
     "typescript": "^4.8.4",
     "zustand": "^4.1.4"
   },
