@@ -2,13 +2,301 @@
 
 React-File-State.
 
-Version: 0.0.1  
+Version: 0.1.0  
 Status: Early stage of Development  
 **NOT PRODUCTION READY**  
 
-## Usage
 
-1. Create a Store (you can create as many store eas you want)
+### Usage
+
+#### 1. Create the Store
+
+Create the store.  
+You can create as many store as you want.  
+A common pattern is `one file -> one store`.  
+Every time you import from that file you get "that" store.  
+This is the reason of the name of the library 😎 !  
+
+```tsx
+import { createStore } from '@tresorama/react-file-state';
+
+const counterStore = createStore(
+  // initial state
+  {
+    count: 0
+  },
+  // derived state resolver
+  (state) => ({
+    isEmpty: state.count === 0
+  }),
+  // actions creator
+  ( set, get ) => ({
+    inc: () => set(prev => ({ ...prev, count: prev.count + 1 })),
+    dec: () => {
+      const prev = get();
+      set({ ...prev, count: prev.count - 1 });
+    },
+    fetchStep: async () => {
+      const step = await fetch(....);
+      set(prev => ({ ...prev, step }));
+    }
+  })
+);
+
+export { counterStore };
+```
+
+#### 2. Use it! - Vanilla JS
+
+```tsx
+import {counterStore} from '..';
+
+console.log(counterStore.getWithDerived()); // { count: 0, isEmpty: true }
+counterStore.actions.inc();
+console.log(counterStore.getWithDerived()); // { count: 1, isEmpty: false }
+```
+
+#### 2. Use it! - React
+
+```tsx
+import {counterStore} from '..';
+
+const CounterInHeader = () => {
+  const [count, actions] = store.useStore( s => s.count );
+  return (
+    <div>
+      <p>Counter: {count}</p>
+      <button onClick={actions.inc}>Increment</button>
+      <button onClick={actions.dec}>Decrement</button>
+    </div>
+  )
+};
+const CounterInFooter = () => {
+  const [isEmpty, actions] = store.useStore( s => s.isEmpty );
+  return (
+    <div>
+      <p> Is Empty: {state.isEmpty}</p>
+      <button onClick={actions.inc}>Increment</button>
+      <button onClick={actions.dec}>Decrement</button>
+    </div>
+  )
+};
+```
+
+### API
+
+### createStore
+
+```ts
+type CreateStore = <
+  S extends State,
+  D extends DerivedState
+  A extends Actions,
+>(
+  initialState: S,
+  derivedStateResolver: (state: S) => D,
+  actionsCreator: (
+    set: (newStateOrStateMutator: S | ((prevState: S) => S) ) => void
+    get: () => S,
+  ) => A
+) => Store;
+
+
+const store = createStore (
+  initialState,
+  derivedStateResolver,
+  actionsCreator
+);
+
+// Example
+const counterStore = createStore(
+  // initialState
+  {
+    count: 0
+  },
+  // derivedStateResolver
+  (state) => ({
+    isEmpty: state.count === 0
+  }),
+  // actionsCreator
+  (set, get) => ({
+    inc: () => set(prev => ({ ...prev, count: prev.count + 1 })),
+    dec: () => {
+      const prev = get();
+      set({ ...prev, count: prev.count - 1 });
+    },
+    fetchStep: async () => {
+      const step = await fetch(....);
+      set(prev => ({ ...prev, step }));
+    }
+  })
+);
+```
+
+**Parameters**
+
+**initialState**
+
+Initial state of your store.
+
+```ts
+import {JsonObject, JsonArray, JsonPrimitive} from 'type-fest';
+
+type Data = JsonObject | JsonArray | JsonPrimitive;
+type State = { [k: string]: Data; };
+type InitialState = State;
+```
+
+**derivedStateResolver**
+A function that take your "state" as input and return a derived object.
+
+```ts
+import {JsonObject, JsonArray, JsonPrimitive} from 'type-fest';
+
+type Data = JsonObject | JsonArray | JsonPrimitive;
+type DerivedState = { [k: string]: Data; };
+type DerivedStateResolver = (state: State) => DerivedState
+```
+
+**actionsCreator**
+A function that receive `get`, `set`, `set2` as input return an object containing all your store actions.
+An action is a function (or async function) that internally can call `get`, `set` or `set2` for update the state.
+
+```ts
+type Actions = { 
+  [k: string]: (...args: any[]) => void;
+};
+type ActionsCreator = (
+  set: (newStateOrStateMutator: State | ((prevState: State) => State) ) => void
+  get: () => State,
+) => Actions
+```
+
+**Return**
+
+Your [store](#store).
+
+<hr />
+
+#### Store
+
+```ts
+type Store = {
+  get: () => State,
+  getDerived: () => DerivedState,
+  getWithDerived: () => State & DerivedState,
+  set: (newStateOrStateMutator: State | ((prevState: State) => State) ) => void
+  actions: Actions,
+  subscribe: () => () => void
+
+  /* React Hook */
+  useStore:  (
+    selector: <T>(stateWithDerived: State & DerivedState) => T;
+  ) => [T, Actions]
+}
+
+store = {
+  // for Vanilla JS
+  get(),            // get "state" portion only    => { count }
+  getDerived(),     // get "derived" portion only  => { isEmpty }
+  getWithDerived(), // get "derived" and "state"   => { count, isEmpty }
+  set(),            // update state
+  actions,          // actions 
+  subscribe(),      // pub-sub listeners, returns unsubscribe function
+
+  // for React
+  useStore()        // see below
+}
+```
+
+<hr/>
+
+#### Store.useStore
+
+> React only feature
+
+A react hook linked to the store.
+It requires a [selector](#storeusestore---selector) as input and returns (similar to `useState` from react) an array containing the "selector" output as first item and sotre actions as second item.  
+
+```tsx
+
+const counterStore = createStore(
+  {count: 0, step:1, name: 'Likes on post' },
+  // omitted - derived state resolver
+  (get,set,set2) => ({
+    inc: () => ...
+  })
+);
+
+type Selector = <T>(stateWithDerived: State & DerivedState) => T;
+
+const MyComp = () => {
+  const [count, actions] = store.useStore( 
+    s => s.count  // 👈 selector function
+  );
+  return (
+    <div>
+      <p>Counter: {count}</p>
+      <button onClick={actions.inc}>Increment</button>
+    </div>
+  )
+}
+```
+
+<hr/>
+
+#### Store.useStore - Selector
+
+> React only feature
+
+To avoid unnecessary re-render you "select" only what parts of the state you use on that component.  
+This ensure that updates on other parts of the state will not re-render this component.  
+In case you don't select nothing, you will receive whole state, and re-renderer on every state change.  
+
+> **NOTE**  
+> Selector function is internally memoized.  
+> You don't need to do it.  
+> For now is not possible to change the selector function once it's set.  
+
+```tsx
+const counterStore = createStore(
+  {count: 0, step:1, name: 'Likes on post' },
+  // omitted - derived state resolver
+  // omitted - actions creator
+);
+
+
+type Selector = <T>(stateWithDerived: State & DerivedState) => T;
+
+// Extract only "count" and re-render only on "count" updates
+const MyComp = () => {
+  const [count, actions] = store.useStore( 
+    s => s.count  // 👈 selector function
+  );
+}
+
+// Extract only "step" and re-render only on "step" updates
+const MyComp = () => {
+  const [step, actions] = store.useStore( s => s.step );
+}
+
+// Extract "name" and "count" and re-render when "name" or "count" updates
+const MyComp = () => {
+  const [ {name, count}, actions] = store.useStore( ({name, count}}) => ({ name, count}) );
+}
+
+// Extract whole state and re-render on his updates
+const MyComp = () => {
+  const [ state, actions] = store.useStore( );
+  // or (equivalent)
+  const [ state, actions] = store.useStore( s => s ); 
+}
+```
+
+## Real World Example
+
+1. Create a Store (you can create as many store es you want)
+
 ```tsx
 import { createStore, mutate } from '@tresorama/react-file-state';
 
@@ -24,12 +312,12 @@ type EditorState = {
   variants: Variant[];
   draftVariant: null | Variant;
 };
+
 // Entity - initial state
 const initialState: EditorState = {
   current_variant_index: 0,
   variants: [
     {
-      // dummy slot
       colorA_hue: 0,
       colorA_start: 0,
       colorB_hue: 0,
@@ -63,7 +351,18 @@ const initialState: EditorState = {
   draftVariant: null
 };
 
-// State Store => combine state + derived state + actions
+// Utility - Mutate directly an object (similar to immer)
+export const mutate = <A,>(a: A, massager: (a: A) => void): A => {
+  // clone
+  const clone: A = JSON.parse(JSON.stringify(a));
+  // let consumer massage it
+  // (inside massager you must mutate directly)
+  massager(clone);
+  // return
+  return clone;
+};
+
+//  Store
 export const editorStore = createStore(
   initialState,
   (state) => ({
@@ -72,20 +371,20 @@ export const editorStore = createStore(
     isEditing: state.draftVariant !== null,
     serialized_state: JSON.stringify(state)
   }),
-  (get, set, set2) => ({
-    goNextVariant: () => set2(prev => {
+  (set) => ({
+    goNextVariant: () => set(prev => {
       const newIndex = Math.min(
         prev.current_variant_index + 1,
         prev.variants.length - 1
       );
       return { ...prev, current_variant_index: newIndex };
     }),
-    goPrevVariant: () => set2(prev => {
+    goPrevVariant: () => set(prev => {
       const newIndex = Math.max(prev.current_variant_index - 1, 0);
       const newState = { ...prev, current_variant_index: newIndex };
       return newState;
     }),
-    deleteCurrentVariant: () => set2(prev => {
+    deleteCurrentVariant: () => set(prev => {
       const newState = mutate(prev, (prev) => {
         if (prev.variants.length <= 2) return; // abort
         prev.variants.splice(prev.current_variant_index, 1);
@@ -96,34 +395,33 @@ export const editorStore = createStore(
       });
       return newState;
     }),
-    enableEditing: () => set2(prev => {
+    enableEditing: () => set(prev => {
       return {
         ...prev,
         draftVariant: { ...prev.variants[prev.current_variant_index] }
       };
     }),
-    disableEditing: () => set2(prev => {
+    disableEditing: () => set(prev => {
       return { ...prev, draftVariant: null };
     }),
-    setDraftValues: (key: keyof Variant, value: Variant[typeof key]) => set2(prev => {
+    setDraftValues: (key: keyof Variant, value: Variant[typeof key]) => set(prev => {
       if (prev.draftVariant === null) return prev;
       const draftVariant = { ...prev.draftVariant, [key]: value };
       return { ...prev, draftVariant };
     }),
-    saveDraftAsNewVariant: () => set2(prev => {
+    saveDraftAsNewVariant: () => set(prev => {
       return mutate(prev, (prev) => {
         if (prev.draftVariant === null) return;
         prev.variants.push(prev.draftVariant);
         prev.current_variant_index = prev.variants.length - 1;
       });
     }),
-    saveDraftOverwritingVariant: () => set2(prev => {
+    saveDraftOverwritingVariant: () => set(prev => {
       return mutate(prev, (prev) => {
         if (prev.draftVariant === null) return;
         prev.variants.splice(prev.current_variant_index, 1, prev.draftVariant);
       });
     })
-    //destroyStorage: () => editorStateStorage.destroy(),
   })
 );
 
