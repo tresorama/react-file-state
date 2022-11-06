@@ -12,9 +12,8 @@ export const createStore = <S extends State, D extends DerivedState, A extends A
     initialState: S,
     derivedStateResolver: (s: S) => D,
     actionsCreator: (
+      set: (newStateOrStateMutator: S | ((prevState: S) => S)) => void,
       get: () => S,
-      set: (newState: S) => void,
-      set2: (stateMutator: (prevState: S) => S) => void
     ) => A
   ) => {
   let state = initialState;
@@ -23,19 +22,20 @@ export const createStore = <S extends State, D extends DerivedState, A extends A
   const get = () => state;
   const getDerived = () => derivedState;
   const getWithDerived = () => ({ ...state, ...derivedState });
-  const set = (newState: S) => {
+  const set = (newStateOrStateMutator: S | ((prevState: S) => S)) => {
+    let newState: S;
+    if (typeof newStateOrStateMutator === 'function') {
+      const prevState = get();
+      newState = newStateOrStateMutator(prevState);
+    }
+    else {
+      newState = newStateOrStateMutator;
+    }
     state = newState;
     derivedState = derivedStateResolver(newState);
     listeners.forEach((x) => x());
   };
-  const set2 = (stateMutator: (prev: S) => S) => {
-    const prev = get();
-    const newState = stateMutator(prev);
-    state = newState;
-    derivedState = derivedStateResolver(newState);
-    listeners.forEach((x) => x());
-  };
-  const actions = actionsCreator(get, set, set2);
+  const actions = actionsCreator(set, get);
   const subscribe = (func: () => void) => {
     listeners.push(func);
     return () => {
