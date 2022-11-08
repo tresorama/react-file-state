@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import type { JsonArray, JsonObject, JsonPrimitive } from "type-fest";
 import { isEqual } from './utils/is-equal';
+import { useSyncExternalStoreWithSelector } from 'use-sync-external-store/with-selector';
 
 type Data = JsonObject | JsonArray | JsonPrimitive;
 type State = { [k: string]: Data; };
@@ -46,20 +47,14 @@ export const createStore = <S extends State, D extends DerivedState, A extends A
   type Selector<U> = (ms: S & D) => U;
   const defaultSelector = (ms: S & D) => ms as any;
   const useStore = <U>(selector: Selector<U> = defaultSelector) => {
-    const selectorMemoized = useCallback(selector, []);
-    const lastState = useRef(selectorMemoized(getWithDerived()));
-    const [state, setState] = useState(selectorMemoized(getWithDerived()));
-    useEffect(() => {
-      const unsubscribe = subscribe(() => {
-        const newState = selectorMemoized(getWithDerived());
-        if (!isEqual(newState, lastState.current)) {
-          setState(newState);
-          lastState.current = newState;
-        }
-      });
-      return () => unsubscribe();
-    }, [selectorMemoized]);
-
+    const initialServerState = useRef(getWithDerived());
+    const state = useSyncExternalStoreWithSelector(
+      subscribe,
+      getWithDerived,
+      () => initialServerState.current,
+      selector,
+      isEqual,
+    );
     return [state, actions] as const;
   };
   return {
