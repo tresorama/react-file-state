@@ -2,7 +2,7 @@
 
 React-File-State.
 
-Version: 0.1.0  
+Version: 0.1.1  
 Status: Early stage of Development  
 **NOT PRODUCTION READY**  
 
@@ -291,6 +291,115 @@ const MyComp = () => {
   // or (equivalent)
   const [ state, actions] = store.useStore( s => s ); 
 }
+```
+
+## Recipe - localStorage
+
+In near feature will be released an API for supporting cache storage natively.
+
+Until that moment, you can adapt this suggested pattern to your app.
+
+1. Create utils for the cache storage
+
+```tsx
+// in /utils/is-browser.ts
+
+// Utility for knowing which env is running the code
+const isDOM = Boolean(
+  typeof window !== 'undefined' &&
+  window.document &&
+  window.document.documentElement
+);
+
+export const isServer = !isDOM;
+export const isBrowser = isDOM;
+```
+
+```tsx
+// in /utils/simple-storage.ts
+
+// Utility - localStorage entry manager
+export class SimpleStorage<T>{
+  /** Unique identifier of this resource in the storage database */
+  key: string;
+  constructor(
+    /** Unique identifier of this resource in the storage database */
+    key: string
+  ) {
+    this.key = key;
+  }
+  serialize(data: T) { return JSON.stringify(data); }
+  deserialize(serializedData: string) { return JSON.parse(serializedData) as T; }
+  get() {
+    const serializedData = window.localStorage.getItem(this.key);
+    if (serializedData === null) return null;
+    return this.deserialize(serializedData);
+  }
+  save(data: T) {
+    const serializedData = this.serialize(data);
+    window.localStorage.setItem(this.key, serializedData);
+  }
+  destroy() {
+    window.localStorage.removeItem(this.key);
+  }
+}
+```
+
+2. Add cache layer to your store
+
+```ts
+// in /your-store.ts
+
+import { isBrowser } from '../utils/is-browser';
+import { SimpleStorage } from '../utils/simple-storage';
+
+// State Types
+type StoreState = { /* ... */}
+
+// cache layer
+const storeCache = new SimpleStorage<StoreState>('my-fancy-store-state');
+
+// store
+const store = createStore(
+  Object.assign(
+    initialState,
+    { isHydrated: false }// flag to be used in your views to show a "stale" / "loading" view
+  ),
+  () => {...}, // derived state resolver
+  () => {...}, // actions creator
+);
+
+if (isBrowser) {
+  // on store changes save to cache layer
+  store.subscribe(
+    () => storeCache.save(store.get())
+  );
+}
+
+// React Component that triggers "store hydration"
+const StoreInitializer = () => {
+
+  React.useEffect(() => {
+    // retrieve store state from cache layer and hydrate store (if exists)
+    const cached = cacheStorage.get();
+    if (cached) store.set({...cached, isHydrated: true });
+    else store.set(prev => ({...prev, isHydrated: true }));
+  }, []);
+  
+  return <>{null}<>; // Empty React Fragment
+}
+```
+
+3. Then in your app tree
+
+```tsx
+// in /app.ts
+
+const App = () => (
+  // ... rest of your app
+  <StoreInitializer />
+  //... rest of your app
+);
 ```
 
 ## Real World Example
