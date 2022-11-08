@@ -3,6 +3,18 @@ import type { JsonArray, JsonObject, JsonPrimitive } from "type-fest";
 import { isEqual } from './utils/is-equal';
 import { useSyncExternalStoreWithSelector } from 'use-sync-external-store/with-selector';
 
+const testArgumentsValidity = (...args: unknown[]) => {
+  if (typeof args[0] !== 'object') {
+    throw new TypeError('createStore - Error - "initialState" must be an object !');
+  }
+  if (!['undefined', 'function'].includes(typeof args[1])) {
+    throw new TypeError('createStore - Error - "derivedStateResolver" must be a function or undefined!');
+  }
+  if (!['undefined', 'function'].includes(typeof args[2])) {
+    throw new TypeError('createStore - Error - "actionsCreator" must be a function or undefined!');
+  }
+};
+
 type Data = JsonObject | JsonArray | JsonPrimitive;
 type State = { [k: string]: Data; };
 type DerivedState = { [k: string]: Data; };
@@ -17,6 +29,11 @@ export const createStore = <S extends State, D extends DerivedState, A extends A
       get: () => S,
     ) => A = () => ({} as any)
   ) => {
+  testArgumentsValidity(
+    initialState,
+    derivedStateResolver,
+    actionsCreator
+  );
   let state = initialState;
   let derivedState = derivedStateResolver(initialState);
   let listeners: (() => void)[] = [];
