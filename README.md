@@ -1,21 +1,18 @@
 # What is this ?
 
-React-File-State.
+React-File-State.  
+One file, one store.
 
-Access: Private  
-Status: Early stage of Development  
+Access: Public  
+Status: Development  
 
 ## Development Track
 
-### Note
-
-- `react-file-state-a`, present typescript error based on API usage, typescript cannot infer types correctly. Discard.
-- `react-file-state-b`, current
-
-### To Do
-
 - [x] Minimal Working Version
-- [ ] Test
+- [x] Create Tests
+- [x] Add Concurrent Mode support
+- [ ] Add Cache Storage Strategy.
+- [ ] Be sure of API before releasing 1.0.0
 
 ## Documentation
 
