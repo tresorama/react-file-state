@@ -1,4 +1,6 @@
 import { createStore, mutate } from '@tresorama/react-file-state';
+import { isBrowser } from '../utils/is-dom';
+import { SimpleStorage } from '../utils/simple-storage';
 
 // Entity - types
 type Variant = {
@@ -51,9 +53,15 @@ const initialState: EditorState = {
   draftVariant: null
 };
 
+// Persistent Storage
+const editorStateStorage = new SimpleStorage<EditorState>('editor-state-DEV-feat/migrate-to-useSyncExternalStore');
+
 // State Store => combine state + derived state + actions
 export const editorStore = createStore(
-  initialState,
+  Object.assign(
+    initialState,
+    { isHydrated: false }
+  ),
   (state) => ({
     show_production_variant: state.current_variant_index === 0,
     variant: state.variants[state.current_variant_index],
@@ -110,7 +118,23 @@ export const editorStore = createStore(
         if (prev.draftVariant === null) return;
         prev.variants.splice(prev.current_variant_index, 1, prev.draftVariant);
       });
-    })
-    //destroyStorage: () => editorStateStorage.destroy(),
+    }),
+    destroyStorage: () => editorStateStorage.destroy(),
   })
 );
+
+
+
+if (isBrowser) {
+  // save to cache on every updates
+  editorStore.subscribe(() => {
+    editorStateStorage.save(editorStore.get());
+  });
+
+  // load from cache if existing
+  setTimeout(() => {
+    const cached = editorStateStorage.get();
+    if (cached) editorStore.set({ ...cached, isHydrated: true });
+    else editorStore.set(prev => ({ ...prev, isHydrated: true }));
+  }, 5000);
+}
