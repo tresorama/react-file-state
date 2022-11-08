@@ -8,6 +8,15 @@
     "target": "ESNext",
     "module": "ESNext"
   },
+  "ts-node": {
+    "transpileOnly": true,
+    "compilerOptions": {
+      "module": "CommonJS",
+    }
+  },
   "include": ["./src/**/*"],
-  "exclude": ["./src/**/*.stories.tsx"]
+  "exclude": [
+    "./src/**/*.stories.tsx",
+    "src/**/*.test.ts"
+  ]
 }

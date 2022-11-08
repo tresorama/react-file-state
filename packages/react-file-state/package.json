@@ -10,7 +10,7 @@
     "build": "tsup",
     "clean": "rimraf ./dist",
     "lint": "tsc --noEmit && echo 'All ok for Typescript Compiler' ",
-    "test": "echo 'Test must be implemented' && exit 0",
+    "test": "ava",
     "checks": "run-s lint test build",
     "prepublishOnly": "run-s checks",
     "preversion": "run-s checks"
@@ -22,10 +22,12 @@
     "@types/node": "^16.18.3",
     "@types/react": "^18.0.25",
     "@types/use-sync-external-store": "^0.0.3",
+    "ava": "^5.0.1",
     "npm-run-all": "^4.1.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "rimraf": "^3.0.2",
+    "ts-node": "^10.9.1",
     "tsup": "^6.4.0",
     "type-fest": "^3.2.0",
     "typescript": "^4.8.4"
@@ -34,5 +36,13 @@
     "react": ">=16.8",
     "react-dom": ">=16.8",
     "use-sync-external-store": "^1.2.0"
+  },
+  "ava": {
+    "extensions": [
+      "ts"
+    ],
+    "require": [
+      "ts-node/register"
+    ]
   }
 }
