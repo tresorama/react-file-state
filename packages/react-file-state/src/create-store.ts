@@ -11,11 +11,11 @@ type Actions = { [k: string]: (...args: any[]) => void; };
 export const createStore = <S extends State, D extends DerivedState, A extends Actions>
   (
     initialState: S,
-    derivedStateResolver: (s: S) => D,
+    derivedStateResolver: ((s: S) => D) = () => ({} as any),
     actionsCreator: (
       set: (newStateOrStateMutator: S | ((prevState: S) => S)) => void,
       get: () => S,
-    ) => A
+    ) => A = () => ({} as any)
   ) => {
   let state = initialState;
   let derivedState = derivedStateResolver(initialState);
