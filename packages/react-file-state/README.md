@@ -2,7 +2,7 @@
 
 React-File-State.
 
-Version: 0.1.1  
+Version: 0.2.0  
 Status: Early stage of Development  
 **NOT PRODUCTION READY**  
 
@@ -94,8 +94,8 @@ type CreateStore = <
   A extends Actions,
 >(
   initialState: S,
-  derivedStateResolver: (state: S) => D,
-  actionsCreator: (
+  derivedStateResolver: undefined | (state: S) => D,
+  actionsCreator: undefined | (
     set: (newStateOrStateMutator: S | ((prevState: S) => S) ) => void
     get: () => S,
   ) => A
@@ -136,7 +136,7 @@ const counterStore = createStore(
 **Parameters**
 
 **initialState**
-
+Type: `object`
 Initial state of your store.
 
 ```ts
@@ -148,6 +148,7 @@ type InitialState = State;
 ```
 
 **derivedStateResolver**
+Type: `function` or `undefined`.
 A function that take your "state" as input and return a derived object.
 
 ```ts
@@ -159,6 +160,7 @@ type DerivedStateResolver = (state: State) => DerivedState
 ```
 
 **actionsCreator**
+Type: `function` or `undefined`.
 A function that receive `get`, `set`, `set2` as input return an object containing all your store actions.
 An action is a function (or async function) that internally can call `get`, `set` or `set2` for update the state.
 
