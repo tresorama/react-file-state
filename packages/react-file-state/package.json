@@ -1,6 +1,7 @@
 {
   "name": "@tresorama/react-file-state",
   "version": "0.2.0",
+  "repository": "https://github.com/tresorama/react-file-state.git",
   "author": "Jacopo Marrone <jacopo.marrone27@gmail.com>",
   "license": "MIT",
   "main": "./dist/index.js",
