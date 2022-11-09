@@ -1,10 +1,11 @@
-# What is this ?
+# React-File-State
 
-React-File-State.  
+Lightweight state management for React apps.  
 One file, one store.
 
-Access: Public  
+Visibility: Public  
 Status: Development  
+Version: 0.2.1
 
 ## Development Track
 
@@ -16,5 +17,14 @@ Status: Development
 
 ## Documentation
 
-[View Documentation](https://github.com/tresorama/react-file-state/blob/main/packages/react-file-state/README.md).  
-[View Demo App - Next.js](https://github.com/tresorama/react-file-state/tree/main/apps/app-next/src/views/ReactFileStateB).
+[View ChangeLog](https://github.com/tresorama/react-file-state/blob/main/docs/CHANGELOG.md)  
+[View Documentation](https://github.com/tresorama/react-file-state/blob/main/docs/README.md)  
+
+## Example
+
+[View Demo App - Next.js](https://github.com/tresorama/react-file-state/tree/main/apps/app-next/src/views/ReactFileStateB).  
+
+## Comparison
+
+[View With Zustand - Next.js](https://github.com/tresorama/react-file-state/tree/main/apps/app-compare-zustand/src/views/WithZustand).  
+
