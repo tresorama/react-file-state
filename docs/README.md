@@ -1,3 +1,23 @@
+# Table of Contents
+- [Usage](#usage)
+  - [Create the Store](#1-create-the-store)
+  - [Use it (Vanilla JS)](#2-use-it---vanilla-js)
+  - [Use it (React JS)](#2-use-it---react)
+- [API](#api)
+  - [`createStore`](#createstore)
+  - [`Store`](#store)
+    - [`useStore`](#storeusestore)
+      - [`Selector`](#storeusestore---selector)
+    - [`get`](#storeget)
+    - [`getDerived`](#storegetderived)
+    - [`getWithDerived`](#storegetwithderived)
+    - [`actions`](#storeactions)
+    - [`subscribe`](#storesubscribe)
+- [Recipe - Local Storage](#recipe---localstorage)
+- [Real World Example](#real-world-example)
+
+
+
 ## Usage
 
 ### 1. Create the Store
@@ -78,7 +98,18 @@ const CounterInFooter = () => {
 
 ## createStore
 
+Type: `function`  
+
+Function used to create a [`Store`](#store).
+
 ```ts
+import { JsonObject, JsonArray, JsonPrimitive } from 'type-fest';
+type Data = JsonObject | JsonArray | JsonPrimitive;
+
+type State = { [k: string]: Data; };
+type DerivedState = { [k: string]: Data; };
+type Actions = { [k: string]: (...args: any[]) => void; };
+
 type CreateStore = <
   S extends State,
   D extends DerivedState
@@ -91,24 +122,29 @@ type CreateStore = <
     get: () => S,
   ) => A
 ) => Store;
+```
 
+Example
 
+```ts
+// Dummy usage
 const store = createStore (
   initialState,
   derivedStateResolver,
   actionsCreator
 );
 
-// Example
-const counterStore = createStore(
+// Example Usage
+const exampleStore = createStore(
+  
   // initialState
-  {
-    count: 0
-  },
+  { count: 0 },
+  
   // derivedStateResolver
   (state) => ({
     isEmpty: state.count === 0
   }),
+  
   // actionsCreator
   (set, get) => ({
     inc: () => set(prev => ({ ...prev, count: prev.count + 1 })),
@@ -121,13 +157,20 @@ const counterStore = createStore(
       set(prev => ({ ...prev, step }));
     }
   })
+
 );
 ```
 
-**Parameters**
+### Returns
 
-**initialState**  
+A [Store](#store).  
+
+### Parameters
+
+#### initialState
+
 Type: `object`  
+Required: Yes  
 
 Initial state of your store.  
 
@@ -139,8 +182,10 @@ type State = { [k: string]: Data; };
 type InitialState = State;
 ```
 
-**derivedStateResolver**  
+#### derivedStateResolver
+
 Type: `function` or `undefined`.  
+Required: No  
 
 A function that take your "state" as input and return a derived object.  
 
@@ -152,8 +197,10 @@ type DerivedState = { [k: string]: Data; };
 type DerivedStateResolver = (state: State) => DerivedState
 ```
 
-**actionsCreator**  
+#### actionsCreator
+
 Type: `function` or `undefined`.  
+Required: No  
 
 A function that receive `set`, `get` as input return an object containing all your store actions.  
 
@@ -172,59 +219,52 @@ type ActionsCreator = (
 ) => Actions
 ```
 
-**Return**
-
-Your [store](#store).  
-
 <hr />
 
 ### Store
 
 ```ts
-type Unsubscribe = () => void;
-type Subscribe = (func: () => void) => Unsubscribe;
-
 type Store = {
   /* for Vanilla Js */
-  get: () => State,
-  getDerived: () => DerivedState,
-  getWithDerived: () => State & DerivedState,
-  set: (newStateOrStateMutator: State | ((prevState: State) => State) ) => void
+  get: Get,
+  getDerived: GetWithDerived,
+  getWithDerived: GetWithDerived,
+  set: Set,
   actions: Actions,
-  subscribe: Subscribe
+  subscribe: Subscribe,
 
   /* React Hook */
-  useStore:  (
-    selector: <T>(stateWithDerived: State & DerivedState) => T;
-  ) => [T, Actions]
+  useStore: UseStore
 }
 ```
 
+The store is an object that contain the state, derived state, and actions.  
+It exposes function used to read and update the state, 
+and a React Hook `useStore`.
+
 <hr/>
 
-### Store.useStore
+#### Store.useStore
 
 > React only feature
 
 A react hook linked to the store.
-It requires a [selector](#storeusestore---selector) as input and returns (similar to `useState` from react) an array containing the "selector" output as first item and sotre actions as second item.  
+It requires a [selector](#storeusestore---selector) as input and returns (similar to `useState` from react) an array containing the "selector" output as first item and store actions as second item.  
 
 ```tsx
 
+// example store
 const counterStore = createStore(
   {count: 0, step:1, name: 'Likes on post' },
-  // omitted - derived state resolver
+  // ... ,
   (get,set,set2) => ({
     inc: () => ...
   })
 );
 
-type Selector = <T>(stateWithDerived: State & DerivedState) => T;
-
+// useStore usage
 const MyComp = () => {
-  const [count, actions] = store.useStore( 
-    s => s.count  // 👈 selector function
-  );
+  const [count, actions] = store.useStore( s => s.count );
   return (
     <div>
       <p>Counter: {count}</p>
@@ -236,9 +276,11 @@ const MyComp = () => {
 
 <hr/>
 
-### Store.useStore - Selector
+##### Store.useStore - Selector
 
-> React only feature
+```ts
+type Selector = <T>(stateWithDerived: State & DerivedState) => T;
+```
 
 To avoid unnecessary re-render you "select" only what parts of the state you use on that component.  
 This ensure that updates on other parts of the state will not re-render this component.  
@@ -247,17 +289,14 @@ In case you don't select nothing, you will receive whole state, and re-renderer 
 > **NOTE**  
 > Selector function is internally memoized.  
 > You don't need to do it.  
-> For now is not possible to change the selector function once it's set.  
+> Is not possible to change the selector function once it's set.  
 
 ```tsx
+// example store
 const counterStore = createStore(
   {count: 0, step:1, name: 'Likes on post' },
-  // omitted - derived state resolver
-  // omitted - actions creator
+  // ...
 );
-
-
-type Selector = <T>(stateWithDerived: State & DerivedState) => T;
 
 // Extract only "count" and re-render only on "count" updates
 const MyComp = () => {
@@ -283,6 +322,47 @@ const MyComp = () => {
   const [ state, actions] = store.useStore( s => s ); 
 }
 ```
+
+##### Store.get
+
+```ts
+type Get = () => State
+```
+
+##### Store.getDerived
+
+```ts
+type GetDerived = () => DerivedState
+```
+
+##### Store.getWithDerived
+
+```ts
+type GetWithDerived = () => State & DerivedState
+```
+
+##### Store.set
+
+```ts
+type StateMutator = (prevState: State) => State;
+type Set = (newStateOrStateMutator: State | StateMutator ) => State
+```
+
+##### Store.actions
+
+```ts
+type Actions = {
+  [k:string]: (...args: any[]) => void
+}
+```
+
+##### Store.subscribe
+
+```ts
+type Unsubscribe = () => void;
+type Subscribe = (func: () => void) => Unsubscribe;
+```
+
 
 ## Recipe - localStorage
 
