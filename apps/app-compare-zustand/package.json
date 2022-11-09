@@ -1,5 +1,5 @@
 {
-  "name": "app-next",
+  "name": "app-compare-zustand",
   "version": "0.0.0",
   "private": true,
   "scripts": {
@@ -23,8 +23,8 @@
     "next": "^13.0.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "@tresorama/react-file-state": "*",
-    "typescript": "^4.8.4"
+    "typescript": "^4.8.4",
+    "zustand": "^4.1.4"
   },
   "devDependencies": {
     "@types/hash-sum": "^1.0.0",

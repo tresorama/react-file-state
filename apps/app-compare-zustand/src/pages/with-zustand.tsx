@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import { ReactFileState } from '../views/ReactFileState';
+import { WithZustand } from '@/views/WithZustand/WithZustand';
 
 export default function Home() {
   return (
@@ -10,7 +10,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div>
-        <ReactFileState />
+        <WithZustand />
       </div>
     </div>
   );
