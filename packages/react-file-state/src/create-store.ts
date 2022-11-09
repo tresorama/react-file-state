@@ -20,6 +20,9 @@ type State = { [k: string]: Data; };
 type DerivedState = { [k: string]: Data; };
 type Actions = { [k: string]: (...args: any[]) => void; };
 
+type Unsubscribe = () => void;
+type Subscribe = (func: () => void) => Unsubscribe;
+
 export const createStore = <S extends State, D extends DerivedState, A extends Actions>
   (
     initialState: S,
@@ -53,13 +56,13 @@ export const createStore = <S extends State, D extends DerivedState, A extends A
     derivedState = derivedStateResolver(newState);
     listeners.forEach((x) => x());
   };
-  const actions = actionsCreator(set, get);
-  const subscribe = (func: () => void) => {
+  const subscribe: Subscribe = (func) => {
     listeners.push(func);
     return () => {
       listeners = listeners.filter(x => x !== func);
     };
   };
+  const actions = actionsCreator(set, get);
 
   type Selector<U> = (ms: S & D) => U;
   const defaultSelector = (ms: S & D) => ms as any;
