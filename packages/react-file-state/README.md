@@ -1,11 +1,12 @@
-# What is this ?
+# React-File-State
 
-React-File-State.
+Lightweight state management for React apps.  
+One file, one store.
 
-Version: 0.2.1  
+Visibility: Public  
 Status: Development  
-**NOT PRODUCTION READY**  
-
+Version: 0.2.1
+**NOT PRODUCTION READY**
 
 ### Usage
 
