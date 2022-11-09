@@ -5,12 +5,18 @@ One file, one store.
 
 Visibility: Public  
 Status: Development  
-Version: 0.2.1
+Version: 0.2.1  
+
 **NOT PRODUCTION READY**
 
-### Usage
+## Documentation
 
-#### 1. Create the Store
+[View ChangeLog](https://github.com/tresorama/react-file-state/blob/main/docs/CHANGELOG.md)  
+[View Documentation](https://github.com/tresorama/react-file-state/blob/main/docs/README.md)  
+
+## Usage
+
+### 1. Create the Store
 
 Create the store.  
 You can create as many store as you want.  
@@ -47,7 +53,7 @@ const counterStore = createStore(
 export { counterStore };
 ```
 
-#### 2. Use it! - Vanilla JS
+### 2. Use it! - Vanilla JS
 
 ```tsx
 import {counterStore} from '..';
@@ -57,7 +63,7 @@ counterStore.actions.inc();
 console.log(counterStore.getWithDerived()); // { count: 1, isEmpty: false }
 ```
 
-#### 2. Use it! - React
+### 2. Use it! - React
 
 ```tsx
 import {counterStore} from '..';
@@ -83,8 +89,3 @@ const CounterInFooter = () => {
   )
 };
 ```
-
-## Documentation
-
-[View ChangeLog](https://github.com/tresorama/react-file-state/blob/main/docs/CHANGELOG.md)  
-[View Documentation](https://github.com/tresorama/react-file-state/blob/main/docs/README.md)  
