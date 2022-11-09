@@ -181,31 +181,22 @@ Your [store](#store).
 ### Store
 
 ```ts
+type Unsubscribe = () => void;
+type Subscribe = (func: () => void) => Unsubscribe;
+
 type Store = {
+  /* for Vanilla Js */
   get: () => State,
   getDerived: () => DerivedState,
   getWithDerived: () => State & DerivedState,
   set: (newStateOrStateMutator: State | ((prevState: State) => State) ) => void
   actions: Actions,
-  subscribe: () => () => void
+  subscribe: Subscribe
 
   /* React Hook */
   useStore:  (
     selector: <T>(stateWithDerived: State & DerivedState) => T;
   ) => [T, Actions]
-}
-
-store = {
-  // for Vanilla JS
-  get(),            // get "state" portion only    => { count }
-  getDerived(),     // get "derived" portion only  => { isEmpty }
-  getWithDerived(), // get "derived" and "state"   => { count, isEmpty }
-  set(),            // update state
-  actions,          // actions 
-  subscribe(),      // pub-sub listeners, returns unsubscribe function
-
-  // for React
-  useStore()        // see below
 }
 ```
 
