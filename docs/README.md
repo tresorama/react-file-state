@@ -376,6 +376,7 @@ Until that moment, you can adapt this suggested pattern to your app.
 // in /utils/is-browser.ts
 
 // Utility for knowing which env is running the code
+// This is used support SSR.
 const isDOM = Boolean(
   typeof window !== 'undefined' &&
   window.document &&
@@ -424,8 +425,9 @@ export class SimpleStorage<T>{
 import { isBrowser } from '../utils/is-browser';
 import { SimpleStorage } from '../utils/simple-storage';
 
-// State Types
-type StoreState = { /* ... */}
+// State Types + initialState
+type StoreState = { ... };
+const initialState: StoreState = { ... };
 
 // cache layer
 const storeCache = new SimpleStorage<StoreState>('my-fancy-store-state');
@@ -440,6 +442,8 @@ const store = createStore(
   () => {...}, // actions creator
 );
 
+// Subscribe to store changes only on Browser env.
+// On server env (SSR) skip this.
 if (isBrowser) {
   // on store changes save to cache layer
   store.subscribe(
