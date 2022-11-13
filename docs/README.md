@@ -451,7 +451,10 @@ if (isBrowser) {
   );
 }
 
-// React Component that triggers "store hydration"
+// Create a React Component that triggers "store hydration"
+// after first render
+// We must wait that first render occurs to prevent
+// Server and client render mismatch.
 const StoreInitializer = () => {
 
   React.useEffect(() => {
@@ -461,7 +464,7 @@ const StoreInitializer = () => {
     else store.set(prev => ({...prev, isHydrated: true }));
   }, []);
   
-  return <>{null}<>; // Empty React Fragment
+  return <>{null}</>; // Empty React Fragment
 }
 ```
 
