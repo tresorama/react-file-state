@@ -257,8 +257,8 @@ It requires a [selector](#storeusestore---selector) as input and returns (simila
 const counterStore = createStore(
   {count: 0, step:1, name: 'Likes on post' },
   // ... ,
-  (get,set,set2) => ({
-    inc: () => ...
+  ( set, get ) => ({
+    inc: () => set(prev => ({...prev, count: prev.count + prev.step }))
   })
 );
 
