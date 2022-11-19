@@ -27,7 +27,10 @@
     "test": "ava",
     "checks": "run-s lint test build",
     "prepublishOnly": "run-s checks",
-    "preversion": "run-s checks"
+    "preversion": "run-s checks",
+    "deploy:dry-run": "npm publish --dry-run",
+    "deploy:manual-examine": "npm pack",
+    "deploy": "npm publish --access public"
   },
   "files": [
     "dist"
