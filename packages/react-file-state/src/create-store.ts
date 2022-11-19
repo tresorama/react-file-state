@@ -23,7 +23,7 @@ type Actions = { [k: string]: (...args: any[]) => void; };
 type Unsubscribe = () => void;
 type Subscribe = (func: () => void) => Unsubscribe;
 
-export const createStore = <S extends State, D extends DerivedState, A extends Actions>
+export const createStore = <S extends State, D extends DerivedState = DerivedState, A extends Actions = Actions>
   (
     initialState: S,
     derivedStateResolver: ((s: S) => D) = () => ({} as any),
