@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 > **Remember we are in pre v1 stage.**
 
+## [0.2.4] - 2022-11-20
+
+### Patch Changes
+
+- Fixed an error that require user to provide 3 generics instead of 1 to `createStore`.  
+
 ## [0.2.3] - 2022-11-10
 
 ### Patch Changes

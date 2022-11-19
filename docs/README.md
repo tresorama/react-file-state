@@ -112,8 +112,8 @@ type Actions = { [k: string]: (...args: any[]) => void; };
 
 type CreateStore = <
   S extends State,
-  D extends DerivedState
-  A extends Actions,
+  D extends DerivedState = DerivedState,
+  A extends Actions = Actions,
 >(
   initialState: S,
   derivedStateResolver: undefined | (state: S) => D,
