@@ -5,7 +5,7 @@ One file, one store.
 
 Visibility: Public  
 Status: Development  
-Version: 0.2.3  
+Version: 0.2.4  
 
 **NOT PRODUCTION READY**
 

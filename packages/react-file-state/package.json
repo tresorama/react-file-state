@@ -1,6 +1,6 @@
 {
   "name": "@tresorama/react-file-state",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Lightweight state management for React apps. One file, one store.",
   "keywords": [
     "react",
