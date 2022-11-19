@@ -29,8 +29,7 @@
     "prepublishOnly": "run-s checks",
     "preversion": "run-s checks",
     "deploy:dry-run": "npm publish --dry-run",
-    "deploy:manual-examine": "npm pack",
-    "deploy": "npm publish --access public"
+    "deploy:manual-examine": "npm pack"
   },
   "files": [
     "dist"
