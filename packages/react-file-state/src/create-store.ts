@@ -1,5 +1,4 @@
 import { useRef } from "react";
-import type { JsonArray, JsonObject, JsonPrimitive } from "type-fest";
 import { isEqual } from './utils/is-equal';
 import { useSyncExternalStoreWithSelector } from 'use-sync-external-store/with-selector';
 
@@ -15,7 +14,7 @@ const testArgumentsValidity = (...args: unknown[]) => {
   }
 };
 
-type Data = JsonObject | JsonArray | JsonPrimitive;
+type Data = any;
 type State = { [k: string]: Data; };
 type DerivedState = { [k: string]: Data; };
 type Actions = { [k: string]: (...args: any[]) => void; };
