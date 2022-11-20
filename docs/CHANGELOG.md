@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 > **Remember we are in pre v1 stage.**
 
+## [0.2.5] - 2022-11-20
+
+### Patch Changes
+
+- Fixed an error that prevent user from using a React.ReactNode as a nested values of State.  
+
 ## [0.2.4] - 2022-11-20
 
 ### Patch Changes

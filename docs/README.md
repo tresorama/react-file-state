@@ -103,8 +103,7 @@ Type: `function`
 Function used to create a [`Store`](#store).
 
 ```ts
-import { JsonObject, JsonArray, JsonPrimitive } from 'type-fest';
-type Data = JsonObject | JsonArray | JsonPrimitive;
+type Data = any;
 
 type State = { [k: string]: Data; };
 type DerivedState = { [k: string]: Data; };
@@ -175,9 +174,8 @@ Required: Yes
 Initial state of your store.  
 
 ```ts
-import {JsonObject, JsonArray, JsonPrimitive} from 'type-fest';
 
-type Data = JsonObject | JsonArray | JsonPrimitive;
+type Data = any;
 type State = { [k: string]: Data; };
 type InitialState = State;
 ```
@@ -190,9 +188,8 @@ Required: No
 A function that take your "state" as input and return a derived object.  
 
 ```ts
-import {JsonObject, JsonArray, JsonPrimitive} from 'type-fest';
 
-type Data = JsonObject | JsonArray | JsonPrimitive;
+type Data = any;
 type DerivedState = { [k: string]: Data; };
 type DerivedStateResolver = (state: State) => DerivedState
 ```
