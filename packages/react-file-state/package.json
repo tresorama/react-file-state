@@ -22,6 +22,7 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsup",
+    "dev": "tsup --watch",
     "clean": "rimraf ./dist",
     "lint": "tsc --noEmit && echo 'All ok for Typescript Compiler' ",
     "test": "ava",
